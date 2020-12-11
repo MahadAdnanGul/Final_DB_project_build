@@ -1,0 +1,185 @@
+drop database if exists restaurant;
+drop database if exists company;
+drop database if exists restaurant;
+create database restaurant;
+use restaurant;
+
+-- create table cartitem(
+-- s_num int not null auto_increment,
+-- customer_id int not null,
+-- item_name varchar(30) unique not null,
+-- item_quantity int not null,
+-- item_price int not null,
+-- shoppingcartid int not null,
+-- Primary key(s_num)
+-- );
+
+-- insert into fooditem(item_name, item_quantity)
+-- values ('McChicken Burger', '1');
+
+create table customer(
+customer_id int not null,
+customer_name varchar(30) not null,
+customer_number varchar(50) not null unique,
+customer_email varchar(50) not null unique,
+customer_address varchar(120) not null,
+customer_city varchar (120) not null,
+randomstr varchar(50) not null,
+hash varchar(50) not null,
+Primary key(customer_id),
+-- CONSTRAINT chk_phone CHECK (customer_number like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'),
+CONSTRAINT chkc_email check (customer_email like '%@%._%')
+);
+
+create table cashier(
+customer_id int not null,
+customer_name varchar(30) not null,
+customer_number varchar(50) not null unique,
+customer_email varchar(50) not null unique,
+customer_address varchar(120) not null,
+customer_city varchar (120) not null,
+randomstr varchar(50) not null,
+hash varchar(50) not null,
+Primary key(customer_id),
+-- CONSTRAINT chk_phone CHECK (customer_number like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'),
+CONSTRAINT chk_email check (customer_email like '%@%._%')
+);
+
+
+
+  create table menu(
+  item_id int not null unique auto_increment,
+  item_name varchar(30) unique not null,
+  item_price int not null ,
+  Primary key(item_id)
+ );
+ 
+create table inventory(
+num int not null auto_increment, 
+quantity int not null,
+product_name varchar(25),
+product_id int,
+INDEX b (product_id),
+INDEX i (product_name),
+FOREIGN KEY (product_name) REFERENCES menu (item_name)
+ON UPDATE CASCADE ON DELETE CASCADE,
+
+FOREIGN KEY (product_id) REFERENCES menu (item_id)
+ON UPDATE CASCADE ON DELETE CASCADE,
+
+primary key (num)
+);
+
+-- delimiter $$
+
+-- CREATE TRIGGER testref AFTER INSERT ON menu
+ -- FOR EACH ROW
+ -- BEGIN
+  --  insert into inventory(quantity,product_name,product_id) values ('1',NEW.item_name,NEW.item_id);
+ -- END$$
+ -- |
+
+-- delimiter ;
+
+
+create table cart(
+ serial_number int not null auto_increment unique,
+ customer_id int not null,
+ hash varchar(50) not null,
+ status varchar(10) not null,
+ product_name varchar(30) not null,
+ product_price int not null ,
+ product_quantity int not null ,
+ -- FOREIGN KEY (product_name) REFERENCES menu (item_name)
+ -- ON UPDATE CASCADE ON DELETE CASCADE,
+ -- FOREIGN KEY (product_price) REFERENCES menu (item_price) 
+ -- ON UPDATE CASCADE ON DELETE CASCADE,
+ Primary key(serial_number)
+); 
+
+ create table orders(
+ time varchar(50) not null,
+ day varchar(50) not null, 
+ month varchar(50) not null, 
+ year varchar(50) not null,
+ order_id int not null unique auto_increment,
+ customer_id int not null,
+ hash varchar(50) not null,
+ order_status varchar(25) not null,
+ order_total int not null,
+ primary key(time, day, month,year, order_id)
+ )ENGINE=INNODB;
+ 
+-- delimiter $$
+
+-- CREATE TRIGGER testref2 AFTER INSERT ON orders
+--   FOR EACH ROW
+--   BEGIN
+-- 	update cart
+--     set hash=new.hash, status='P'
+--     where customer_id=new.customer_id and status='NP';
+--     
+--   END$$
+-- |
+
+-- delimiter ;
+
+
+
+
+
+create table sales(
+sale_id int auto_increment not null,
+order_time varchar(50) not null,
+order_day varchar(50) not null,
+order_month varchar(50) not null,
+order_year varchar(50) not null,
+
+order_id int not null,
+order_total int not null,
+-- INDEX i (order_id),
+INDEX t (order_time,order_day,order_month, order_year,order_id),
+-- INDEX z (order_total),
+
+PRIMARY KEY (sale_id),
+
+-- FOREIGN KEY (order_id) REFERENCES orders (order_id)
+-- ON UPDATE CASCADE ON DELETE CASCADE,
+
+FOREIGN KEY (order_time,order_day,order_month,order_year, order_id) REFERENCES orders (time, day, month,year, order_id)
+-- ON UPDATE CASCADE ON DELETE CASCADE
+
+-- FOREIGN KEY (order_total) REFERENCES orders (order_total)
+-- ON UPDATE CASCADE ON DELETE CASCADE
+
+)ENGINE=INNODB;
+
+-- delimiter $$
+
+-- CREATE TRIGGER testref3 AFTER update ON orders
+--   FOR EACH ROW
+--   BEGIN
+-- 	if New.order_status="complete" then
+-- 	insert into sales(order_id, order_time, order_day, order_month,order_year, order_total) values (NEW.order_id, NEW.time, New.day, New.month,New.year, NEW.order_total);
+--   END IF;
+--  
+--   
+--   END$$
+-- |
+
+-- delimiter ;
+
+
+-- insert into menu(item_name,item_price) values ("bigmac",'450');
+
+
+-- update menu set item_name="smallMac" where item_name="bigmac"; 
+
+
+select* from customer;
+select* from cashier;
+select* from menu;
+select* from inventory;
+select* from cart;
+select* from orders;
+select* from sales;
