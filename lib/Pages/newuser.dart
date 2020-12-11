@@ -97,7 +97,7 @@ class _NewuserState extends State<Newuser> {
             widget.user.mail = email;
             widget.user.address=address;
             widget.user.city=city;
-            widget.user.hash = password;
+            widget.user.hash=password;
 
           });
       

@@ -18,7 +18,7 @@ import 'user.dart';
 
 class Http {
   // localhost || 10.0.2.2 (mysql) || 192.168.1.165 (home) || 10.192.82.178 (eduroam) || 10.10.10.47 (PIA despscho Juanjo)
-  final url = 'http://192.168.0.100:4000/';
+  final url = 'https://db-final-2.herokuapp.com/';
   // final users = 'dummy/';
   final headers = {'Content-Type': 'application/json'};
   final encoding = Encoding.getByName('utf-8');

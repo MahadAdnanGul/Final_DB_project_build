@@ -5,6 +5,8 @@ import 'package:frontend/models/http.dart';
 import 'package:frontend/models/menu.dart';
 
 import '../models/inventory.dart';
+import '../models/inventory.dart';
+import '../models/menu.dart';
 
 class MenuManagement_addItems extends StatefulWidget {
   @override
@@ -15,13 +17,38 @@ class MenuManagement_addItems extends StatefulWidget {
 
 class MenuManagement_addItemsState extends State<MenuManagement_addItems> {
   List<MenuGet> _menugets = List<MenuGet>();
+  List<MenuGet> _menugets2 = List<MenuGet>();
   String _name;
   String _price;
   Timer _timer;
   Http http = new Http();
   bool check=false;
+  Future<String> ans;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  Future<String> inventorybutton_submit(MenuPost m, InventoryPost i) async {
+    print('inside aync');
+    await http.MenuPostRequest(m);
+    print('menu aedded done');
+    http.getMenu().then((value) {
+      setState(() {
+        _menugets2.addAll(value);
+      });
+    });
+
+
+    Future.delayed(
+      Duration(seconds: 2),
+          () => i.product_id=_menugets2[_menugets2.length-1].item_id,);
+
+    Future.delayed(
+        Duration(seconds: 2),
+            () => http.InventoryPostRequest(i),);
+    print("all done");
+
+    return 'Your order is:';
+  }
 
   Widget _buildName() {
     return TextFormField(
@@ -100,13 +127,17 @@ class MenuManagement_addItemsState extends State<MenuManagement_addItems> {
                   print(int.parse(_price));
                   print(_name);
                   MenuPost m = new MenuPost(int.parse(_price),_name);
-                  InventoryPost inv=new InventoryPost(1, _name, _menugets.length+1);
+                  InventoryPost inv=new InventoryPost(1, _name, 1);
                   print(m);
 
-                  http.MenuPostRequest(m);
+
+                  ans=inventorybutton_submit(m, inv);
+                 // http.MenuPostRequest(m);
+                  //http.InventoryPostRequest(inv);
 
 
-                  http.InventoryPostRequest(inv);
+
+
 
 
 
